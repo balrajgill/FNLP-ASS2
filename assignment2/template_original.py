@@ -1,6 +1,4 @@
 import inspect, sys, hashlib
-import itertools
-import math
 
 # Hack around a warning message deep inside scikit learn, loaded by nltk :-(
 #  Modelled on https://stackoverflow.com/a/25067818
@@ -19,11 +17,6 @@ except NameError:
 
 from nltk.corpus import brown
 from nltk.tag import map_tag, tagset_mapping
-from nltk.probability import ConditionalProbDist
-from nltk.probability import ConditionalFreqDist
-from nltk.probability import MLEProbDist
-from nltk.probability import LidstoneProbDist
-
 
 if map_tag('brown', 'universal', 'NR-TL') != 'NOUN':
     # Out-of-date tagset, we add a few that we need
@@ -67,26 +60,17 @@ class HMM:
         :return: The emission probability distribution and a list of the states
         :rtype: Tuple[ConditionalProbDist, list(str)]
         """
-       # raise NotImplementedError('HMM.emission_model')
+        raise NotImplementedError('HMM.emission_model')
         # TODO prepare data
 
         # Don't forget to lowercase the observation otherwise it mismatches the test data
         # Do NOT add <s> or </s> to the input sentences
-        
-        new_data = []
-        for x in range(len(train_data)):
-            new_data += train_data[x]
-
-        data = [(tag, word.lower()) for (word, tag) in new_data]
-        
-        #data = [(word.lower() , tag) for sentence in train_data for (word, tag) in sentence]
-    
+        data = 'fixme'
 
         # TODO compute the emission model
-        emission_FD = ConditionalFreqDist(data)
-        lidstone_estimator = lambda fd: LidstoneProbDist(fd, 0.01,fd .B() + 1)
-        self.emission_PD = ConditionalProbDist(emission_FD, lidstone_estimator)
-        self.states = list(self.emission_PD.keys()) 
+        emission_FD = 'fixme'
+        self.emission_PD = 'fixme'
+        self.states = 'fixme'
 
         return self.emission_PD, self.states
 
@@ -103,13 +87,8 @@ class HMM:
         :return: log base 2 of the estimated emission probability
         :rtype: float
         """
-        prob = self.emission_PD[state].prob(word)  
-        log_estimate = math.log2(prob)
-        
-        
-        return log_estimate
-      #  raise NotImplementedError('HMM.elprob')
-       # return ... # fixme
+        raise NotImplementedError('HMM.elprob')
+        return ... # fixme
 
     # Compute transition model using ConditionalProbDist with a LidstonelprobDist estimator.
     # See comments for emission_model above for details on the estimator.
@@ -122,29 +101,20 @@ class HMM:
         :return: The transition probability distribution
         :rtype: ConditionalProbDist
         """
-    
+        raise NotImplementedError('HMM.transition_model')
         # TODO: prepare the data
-        #  tagGenerators=(((s[i][1],s[i+1][1]) for i in range(len(s)-1)) for s in train_data)
-        #  data = itertools.chain.from_iterable(tagGenerators)
-        #  print(list(data))
         data = []
-
 
         # The data object should be an array of tuples of conditions and observations,
         # in our case the tuples will be of the form (tag_(i),tag_(i+1)).
         # DON'T FORGET TO ADD THE START SYMBOL </s> and the END SYMBOL </s>
         for s in train_data:
-            data.append(("<s>", s[0][1]))          #Start Symbol
-            for i in range(len(s) - 1):
-                data.append((s[i][1], s[i + 1][1]))
-            data.append((s[len(s) - 1][1], "</s>"))
-        print(data)
+            pass  # TODO
 
         # TODO compute the transition model
 
-        transition_FD = ConditionalFreqDist(data)
-        lidstone_estimator = lambda fd: LidstoneProbDist(fd, 0.01,fd .B() + 1)
-        self.transition_PD = ConditionalProbDist(transition_FD, lidstone_estimator)
+        transition_FD = 'fixme'
+        self.transition_PD = 'fixme'
 
         return self.transition_PD
 
@@ -161,9 +131,8 @@ class HMM:
         :return: log base 2 of the estimated transition probability
         :rtype: float
         """
-        prob = self.transition_PD[state1].prob(state2)  
-        log_estimate = math.log2(prob)
-        return log_estimate
+        raise NotImplementedError('HMM.tlprob')
+        return ... # fixme
 
     # Train the HMM
     def train(self):
@@ -186,19 +155,14 @@ class HMM:
         :param observation: the first word in the sentence to tag
         :type observation: str
         """
-        states = self.states
-        self.viterbi = [{}]  # for the viterbi data structure a list of dictionaries will be used , one alternative was an 2d array but for this case dictionaries ability to index by keys will be usefull
-        self.backpointer = {}  # backpointer needed for the Viterbi Path and a dictionary will used to store the sequence of tags
-        
-    
+        raise NotImplementedError('HMM.initialise')
         # Initialise step 0 of viterbi, including
-        # transition from <s> to observation
+        #  transition from <s> to observation
         # use costs (-log-base-2 probabilities)
+        # TODO
+
         # Initialise step 0 of backpointer
-        for state in states:
-            self.viterbi[0][state] =  self.tlprob('<s>' , state) * self.elprob(state , observation)
-            self.backpointer[state] = [state]
-        
+        # TODO
 
     # Tag a new sentence using the trained model and already initialised data structures.
     # Use the models stored in the variables: self.emission_PD and self.transition_PD.
@@ -212,12 +176,12 @@ class HMM:
         :type observations: list(str)
         :return: List of tags corresponding to each word of the input
         """
-       
+        raise NotImplementedError('HMM.tag')
         tags = []
 
-     #   for t in ...: # fixme to iterate over steps
-     #       for s in ...: # fixme to iterate over states
-     #           pass # fixme to update the viterbi and backpointer data structures
+        for t in ...: # fixme to iterate over steps
+            for s in ...: # fixme to iterate over states
+                pass # fixme to update the viterbi and backpointer data structures
                 #  Use costs, not probabilities
 
         # TODO
@@ -227,7 +191,7 @@ class HMM:
         # Reconstruct the tag sequence using the backpointer list.
         # Return the tag sequence corresponding to the best path as a list.
         # The order should match that of the words in the sentence.
-        tags = [] # fixme
+        tags = ... # fixme
 
         return tags
 
@@ -246,8 +210,8 @@ class HMM:
         :return: The value (a cost) for state as of step
         :rtype: float
         """
-        #raise NotImplementedError('HMM.get_viterbi_value')
-        return self.viterbi[step][state] # fix me
+        raise NotImplementedError('HMM.get_viterbi_value')
+        return ... # fix me
 
     # Access function for testing the backpointer data structure
     # For example model.get_backpointer_value('VERB',2) might be 'NOUN'
@@ -264,8 +228,8 @@ class HMM:
         :return: The state name to go back to at step-1
         :rtype: str
         """
-      #  raise NotImplementedError('HMM.get_backpointer_value')
-        return self.backpointer[state] # fix me
+        raise NotImplementedError('HMM.get_backpointer_value')
+        return ... # fix me
 
 def answer_question4b():
     """
@@ -274,7 +238,7 @@ def answer_question4b():
     :rtype: list(tuple(str,str)), list(tuple(str,str)), str
     :return: your answer [max 280 chars]
     """
-  #  raise NotImplementedError('answer_question4b')
+    raise NotImplementedError('answer_question4b')
 
     # One sentence, i.e. a list of word/tag pairs, in two versions
     #  1) As tagged by your HMM
@@ -298,7 +262,7 @@ def answer_question5():
     :rtype: str
     :return: your answer [max 500 chars]
     """
-   # raise NotImplementedError('answer_question5')
+    raise NotImplementedError('answer_question5')
 
     return inspect.cleandoc("""\
     fill me in""")[0:500]
@@ -312,7 +276,7 @@ def answer_question6():
     :rtype: str
     :return: your answer [max 500 chars]
     """
-   # raise NotImplementedError('answer_question6')
+    raise NotImplementedError('answer_question6')
 
     return inspect.cleandoc("""\
     fill me in""")[0:500]
@@ -333,12 +297,10 @@ def answers():
 
     # Divide corpus into train and test data.
     test_size = 500
+    train_size = 0 # fixme
 
-    train_size = len(tagged_sentences_universal) - test_size # fixme
-    
-    test_data_universal = tagged_sentences_universal[-500:] # fixme
-    train_data_universal = tagged_sentences_universal[:train_size] # fixme
-  
+    test_data_universal = tagged_sentences_universal[1:2] # fixme
+    train_data_universal = tagged_sentences_universal[3:4] # fixme
 
     if hashlib.md5(''.join(map(lambda x:x[0],train_data_universal[0]+train_data_universal[-1]+test_data_universal[0]+test_data_universal[-1])).encode('utf-8')).hexdigest()!='164179b8e679e96b2d7ff7d360b75735':
         print('!!!test/train split (%s/%s) incorrect, most of your answers will be wrong hereafter!!!'%(len(train_data_universal),len(test_data_universal)),file=sys.stderr)
